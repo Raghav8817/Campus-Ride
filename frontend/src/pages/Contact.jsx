@@ -7,7 +7,7 @@ function Contact() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            const BASE_URL = import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== "" ? import.meta.env.VITE_API_URL : (import.meta.env.DEV ? "http://localhost:3000" : "");
+            const BASE_URL = import.meta.env.VITE_API_URL || "";
             try {
                 const res = await fetch(`${BASE_URL}/api/reports?type=transport_contacts`);
                 if (res.ok) {

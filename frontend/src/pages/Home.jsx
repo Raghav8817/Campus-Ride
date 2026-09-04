@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import BottomNav from "./BottomNav"
 
-const BASE_URL = import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== "" ? import.meta.env.VITE_API_URL : (import.meta.env.DEV ? "http://localhost:3000" : "");
+const BASE_URL = import.meta.env.VITE_API_URL || "";
 
 function haversineKm(lat1, lon1, lat2, lon2) {
     const R = 6371

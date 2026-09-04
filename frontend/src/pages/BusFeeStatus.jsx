@@ -9,7 +9,7 @@ function BusFeeStatus() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const BASE_URL = import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== "" ? import.meta.env.VITE_API_URL : (import.meta.env.DEV ? "http://localhost:3000" : "");
+      const BASE_URL = import.meta.env.VITE_API_URL || "";
       try {
         const uRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
         if (!uRes.ok) { navigate("/"); return; }
