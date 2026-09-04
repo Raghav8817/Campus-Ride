@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, useMap, Polyline } from "react-leaflet
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== "" ? import.meta.env.VITE_API_URL : (import.meta.env.DEV ? "http://localhost:3000" : "");
 
 // Fix Leaflet Icons
 delete L.Icon.Default.prototype._getIconUrl

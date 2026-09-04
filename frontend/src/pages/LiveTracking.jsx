@@ -186,7 +186,7 @@ export default function LiveTracking() {
     const [eta, setEta]               = useState("…")
     const [lastUpdated, setLastUpdated] = useState(null)
 
-    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+    const BASE_URL = import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== "" ? import.meta.env.VITE_API_URL : (import.meta.env.DEV ? "http://localhost:3000" : "");
 
     // ── Fetch data ──────────────────────────────────────────────────────────
     const fetchTrackingData = useCallback(async () => {
