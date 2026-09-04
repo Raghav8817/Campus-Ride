@@ -6,12 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
-      '/login': 'http://localhost:3000',
-      '/signup': 'http://localhost:3000',
-      '/logout': 'http://localhost:3000',
-      '/verify': 'http://localhost:3000',
-      '/user-data': 'http://localhost:3000'
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      }
     }
   }
 })
