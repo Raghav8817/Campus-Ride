@@ -17,7 +17,7 @@ function BusAttendanceReportDetails() {
         const fetchData = async () => {
             try {
                 // 1. Verify Management Session
-                const uRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+                const uRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
                 if (!uRes.ok) { navigate("/"); return; }
                 const currUser = await uRes.json();
                 if (currUser.role !== "management") { navigate("/"); return; }

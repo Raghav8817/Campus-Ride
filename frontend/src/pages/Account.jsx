@@ -14,7 +14,7 @@ function Account() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+                const res = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
                 if (res.ok) {
                     const data = await res.json();
                     const mappedUser = {
@@ -96,7 +96,7 @@ function Account() {
 
     const handleLogout = async () => {
         try {
-            await fetch(`${BASE_URL}/logout`, { method: "POST", credentials: "include" });
+            await fetch(`${BASE_URL}/api/logout`, { method: "POST", credentials: "include" });
         } catch (err) { console.error(err); }
         navigate("/");
     }

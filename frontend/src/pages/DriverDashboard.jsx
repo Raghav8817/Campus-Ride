@@ -33,7 +33,7 @@ function DriverDashboard() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const userRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" })
+                const userRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" })
                 if (!userRes.ok) { navigate("/Login"); return }
                 const userData = await userRes.json()
 
@@ -139,7 +139,7 @@ function DriverDashboard() {
 
     const logout = async () => {
         try {
-            const res = await fetch(`${BASE_URL}/logout`, { method: "POST", credentials: "include" })
+            const res = await fetch(`${BASE_URL}/api/logout`, { method: "POST", credentials: "include" })
             if (res.ok) window.location.href = "/Login"
         } catch { window.location.href = "/Login" }
     }

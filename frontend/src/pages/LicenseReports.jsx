@@ -11,7 +11,7 @@ function LicenceReports() {
 
     const fetchData = async () => {
         try {
-            const uRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+            const uRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
             if (!uRes.ok) { navigate("/"); return; }
             const currentUser = await uRes.json();
             if (currentUser.role !== "management") { navigate("/"); return; }

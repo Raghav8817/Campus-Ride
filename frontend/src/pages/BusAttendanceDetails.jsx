@@ -17,7 +17,7 @@ function BusAttendanceDetails() {
         const fetchData = async () => {
             try {
                 // Verify session
-                const userRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+                const userRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
                 if (!userRes.ok) { navigate("/"); return; }
                 const userData = await userRes.json();
                 setManagement(userData);

@@ -184,7 +184,7 @@ function ManagementDashboard() {
 
     const fetchData = async () => {
         try {
-            const userRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+            const userRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
             if (!userRes.ok) { navigate("/"); return; }
             const userData = await userRes.json();
             if (userData.role !== "management") { navigate("/"); return; }
@@ -217,7 +217,7 @@ function ManagementDashboard() {
 
     const logout = async () => {
         try {
-            await fetch(`${BASE_URL}/logout`, { method: "POST", credentials: "include" });
+            await fetch(`${BASE_URL}/api/logout`, { method: "POST", credentials: "include" });
             navigate("/login");
         } catch(e) { navigate("/login"); }
     }

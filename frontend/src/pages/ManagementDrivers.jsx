@@ -21,7 +21,7 @@ function ManagementDrivers() {
                 }
 
                 // Verify management auth
-                const userRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+                const userRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
                 if (userRes.ok) {
                     const userData = await userRes.json();
                     if (userData.role !== "management") {

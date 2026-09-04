@@ -19,7 +19,7 @@ function ManaDashboard() {
     const fetchData = async () => {
         try {
             // 1. Verify management auth
-            const userRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+            const userRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
             if (!userRes.ok) { navigate("/"); return; }
             const userData = await userRes.json();
             if (userData.role !== "management") { navigate("/"); return; }
@@ -112,7 +112,7 @@ function ManaDashboard() {
 
                     <div className="mt-auto border-t border-white/5 pt-6">
                          <button onClick={() => {
-                             fetch(`${BASE_URL}/logout`, { method: "POST", credentials: "include" }).then(() => navigate("/login"));
+                             fetch(`${BASE_URL}/api/logout`, { method: "POST", credentials: "include" }).then(() => navigate("/login"));
                          }} className="w-full bg-red-500/10 text-red-500 p-3 rounded-xl font-bold text-sm hover:bg-red-500/20 transition-all">
                             Logout System
                         </button>

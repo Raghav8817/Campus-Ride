@@ -19,26 +19,6 @@
       "dest": "backend/api/index.js"
     },
     {
-      "src": "/login",
-      "dest": "backend/api/index.js"
-    },
-    {
-      "src": "/signup",
-      "dest": "backend/api/index.js"
-    },
-    {
-      "src": "/logout",
-      "dest": "backend/api/index.js"
-    },
-    {
-      "src": "/verify",
-      "dest": "backend/api/index.js"
-    },
-    {
-      "src": "/user-data",
-      "dest": "backend/api/index.js"
-    },
-    {
       "src": "/(.*)",
       "dest": "frontend/$1"
     }

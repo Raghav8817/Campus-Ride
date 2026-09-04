@@ -46,7 +46,7 @@ function Home() {
     useEffect(() => {
         const fetchStudentData = async () => {
             try {
-                const res = await fetch(`${BASE_URL}/user-data`, { credentials: "include" })
+                const res = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" })
                 const data = await res.json()
                 if (res.ok) setUser(data)
             } catch (error) {

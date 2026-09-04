@@ -12,7 +12,7 @@ const ProtectedRoute = () => {
         const checkAuth = async () => {
             try {
                 // FIXED: Now uses the dynamic BASE_URL
-                const res = await fetch(`${BASE_URL}/verify`, {
+                const res = await fetch(`${BASE_URL}/api/verify`, {
                     credentials: "include"
                 });
 

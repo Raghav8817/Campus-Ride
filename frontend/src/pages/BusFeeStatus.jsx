@@ -11,7 +11,7 @@ function BusFeeStatus() {
     const fetchData = async () => {
       const BASE_URL = import.meta.env.VITE_API_URL || "";
       try {
-        const uRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+        const uRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
         if (!uRes.ok) { navigate("/"); return; }
         const currentUser = await uRes.json();
         

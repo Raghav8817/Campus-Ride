@@ -14,7 +14,7 @@ function RouteReportDetails() {
         const fetchData = async () => {
             try {
                 // Verify session
-                const uRes = await fetch(`${BASE_URL}/user-data`, { credentials: "include" });
+                const uRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
                 if (!uRes.ok) { navigate("/"); return; }
                 const currUser = await uRes.json();
                 setManagement(currUser);
