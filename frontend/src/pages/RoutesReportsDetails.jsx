@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
-
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+import { useEffect, useState } from "react"
+import { BASE_URL } from "../config/api";
 
 function RouteReportDetails() {
     const navigate = useNavigate()

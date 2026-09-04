@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import BackButton from "./BackButton"
-
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+import BackButton from "./BackButton"
+import { BASE_URL } from "../config/api";
 
 function InfoPage() {
     const navigate = useNavigate()

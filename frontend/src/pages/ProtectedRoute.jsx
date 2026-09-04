@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { BASE_URL } from "../config/api";
 
 const ProtectedRoute = () => {
     const [auth, setAuth] = useState({ isAuth: null, role: null });
     const location = useLocation();
 
-    // DYNAMIC URL: Uses Vercel variable if it exists, otherwise defaults to localhost
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
+    // DYNAMIC URL: Uses Vercel variable if it exists, otherwise defaults to localhost
 
     useEffect(() => {
         const checkAuth = async () => {

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import { BASE_URL } from "../config/api";
 
 function ForgotPassword() {
     const navigate = useNavigate()
@@ -11,7 +12,6 @@ function ForgotPassword() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
 
     const handleResetPassword = async () => {
         if (!email || !newPassword) {

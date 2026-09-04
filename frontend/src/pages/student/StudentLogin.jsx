@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { BASE_URL } from "../../config/api";
 
 function StudentLogin() {
     const [role, setRole] = useState("student");
@@ -9,9 +10,7 @@ function StudentLogin() {
     const [busNumber, setBusNumber] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
         setError("");

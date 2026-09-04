@@ -1,9 +1,8 @@
 import { Bell, AlertTriangle, X } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
-import BottomNav from "./BottomNav"
-
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+import BottomNav from "./BottomNav"
+import { BASE_URL } from "../config/api";
 
 function haversineKm(lat1, lon1, lat2, lon2) {
     const R = 6371

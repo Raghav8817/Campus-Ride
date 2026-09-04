@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import BottomNav from "./BottomNav"
+import { BASE_URL } from "../config/api";
 
 function Account() {
     const [user, setUser] = useState(null)
     const [imagePreview, setImagePreview] = useState("/profile.png")
     const [loading, setLoading] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
-    const navigate = useNavigate()
-
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchUser = async () => {

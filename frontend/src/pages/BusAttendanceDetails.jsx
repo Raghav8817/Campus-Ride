@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { BASE_URL } from "../config/api";
 
 function BusAttendanceDetails() {
     const navigate = useNavigate()
@@ -9,9 +10,7 @@ function BusAttendanceDetails() {
     const [students, setStudents] = useState([])
     const [attendance, setAttendance] = useState([])
     const [busNumberDisplay, setBusNumberDisplay] = useState("")
-    const [loading, setLoading] = useState(true)
-
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchData = async () => {

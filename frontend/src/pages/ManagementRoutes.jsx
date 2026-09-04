@@ -2,9 +2,8 @@ import { useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { MapContainer, TileLayer, Marker, useMap, Polyline } from "react-leaflet"
 import L from "leaflet"
-import "leaflet/dist/leaflet.css"
-
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+import "leaflet/dist/leaflet.css"
+import { BASE_URL } from "../config/api";
 
 // Fix Leaflet Icons
 delete L.Icon.Default.prototype._getIconUrl

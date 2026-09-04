@@ -12,6 +12,7 @@ import {
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import BottomNav from "./BottomNav"
+import { BASE_URL } from "../config/api";
 
 // ─── Fix Leaflet default icon broken in Vite/Webpack ─────────────────────────
 delete L.Icon.Default.prototype._getIconUrl
@@ -184,9 +185,7 @@ export default function LiveTracking() {
     const [busDetails, setBusDetails] = useState({ bus_id: "", full_name: "", contact_number: "" })
     const [distance, setDistance]     = useState("Calculating…")
     const [eta, setEta]               = useState("…")
-    const [lastUpdated, setLastUpdated] = useState(null)
-
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
+    const [lastUpdated, setLastUpdated] = useState(null)
 
     // ── Fetch data ──────────────────────────────────────────────────────────
     const fetchTrackingData = useCallback(async () => {

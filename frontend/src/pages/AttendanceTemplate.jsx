@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { BASE_URL } from "../config/api";
 
 function AttendanceTemplate({ type }) {
 
@@ -21,8 +22,7 @@ function AttendanceTemplate({ type }) {
     const daysInMonth = new Date(year, month + 1, 0).getDate()
 
     useEffect(() => {
-        const fetchAttendance = async () => {
-            const BASE_URL = import.meta.env.VITE_API_URL || "";
+        const fetchAttendance = async () => {
             try {
                 const res = await fetch(`${BASE_URL}/api/attendance?type=${type}`);
                 if (res.ok) {
@@ -54,9 +54,7 @@ function AttendanceTemplate({ type }) {
             [key]: selectedStatus
         }
 
-        setAttendance(updatedAttendance)
-        
-        const BASE_URL = import.meta.env.VITE_API_URL || "";
+        setAttendance(updatedAttendance)
         try {
             await fetch(`${BASE_URL}/api/attendance`, {
                 method: "POST",

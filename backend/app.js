@@ -77,8 +77,10 @@ const cookieOptions = {
     path: '/',
     maxAge: 86400000
 };
+const router = express.Router();
+
 // --- AUTH VERIFICATION ---
-app.get(['/verify', '/api/verify'], (req, res) => {
+router.get(['/verify', '/api/verify'], (req, res) => {
     const token = req.cookies.authToken;
     // Always send a JSON object so res.json() doesn't crash on the frontend
     if (!token) return res.status(401).json({ isAuth: false, message: "No token" });
@@ -91,7 +93,7 @@ app.get(['/verify', '/api/verify'], (req, res) => {
 
 // --- GET USER PROFILE DATA ---
 // Optimized user-data route using your middleware
-app.get(['/user-data', '/api/user-data'], verifyAdmin, (req, res) => {
+router.get(['/user-data', '/api/user-data'], verifyAdmin, (req, res) => {
     const { id, role } = req.user; // Provided by verifyAdmin
 
     let sql = "";
@@ -114,7 +116,7 @@ app.get(['/user-data', '/api/user-data'], verifyAdmin, (req, res) => {
 });
 
 // --- UPDATE USER PROFILE DATA ---
-app.put('/api/user-data', verifyAdmin, (req, res) => {
+router.put(['/user-data', '/api/user-data'], verifyAdmin, (req, res) => {
     const { id, role } = req.user;
     const { fullName, busId, course, branchSem, contact, address, profileImage } = req.body;
 
@@ -153,7 +155,7 @@ app.put('/api/user-data', verifyAdmin, (req, res) => {
 });
 
 // --- NEW: FETCH SPECIFIC USER DETAIL ---
-app.get('/api/management/user/:role/:userId', verifyAdmin, (req, res) => {
+router.get(['/management/user/:role/:userId', '/api/management/user/:role/:userId'], verifyAdmin, (req, res) => {
     const { role, userId } = req.params;
     let sql = "";
     if (role === 'student') sql = "SELECT * FROM students WHERE email_id = ?";
@@ -168,7 +170,7 @@ app.get('/api/management/user/:role/:userId', verifyAdmin, (req, res) => {
 });
 
 // --- NEW: FETCH ATTENDANCE BY BUS ---
-app.get('/api/management/attendance/bus/:busNumber', verifyAdmin, (req, res) => {
+router.get(['/management/attendance/bus/:busNumber', '/api/management/attendance/bus/:busNumber'], verifyAdmin, (req, res) => {
     const { busNumber } = req.params;
     // Joining with students to get names of those who boarded
     const sql = `
@@ -185,7 +187,7 @@ app.get('/api/management/attendance/bus/:busNumber', verifyAdmin, (req, res) => 
 });
 
 // --- NEW: FETCH NOTIFICATIONS ---
-app.get('/api/notifications', verifyAdmin, (req, res) => {
+router.get(['/notifications', '/api/notifications'], verifyAdmin, (req, res) => {
     const { role } = req.user;
     
     // Fetch notifications where role is 'all' or matches user's specific role
@@ -204,7 +206,7 @@ app.get('/api/notifications', verifyAdmin, (req, res) => {
 
 // --- SIGNUP ---
 // --- SIGNUP (SECURE) ---
-app.post(['/signup', '/api/signup'], async (req, res) => {
+router.post(['/signup', '/api/signup'], async (req, res) => {
     const {
         role, fullName, password, email, contact, address,
         studentBusId, course, branchSem,
@@ -275,7 +277,7 @@ app.post(['/signup', '/api/signup'], async (req, res) => {
 });
 // --- LOGIN ---
 // --- LOGIN ---
-app.post(['/login', '/api/login'], (req, res) => {
+router.post(['/login', '/api/login'], (req, res) => {
     const { role, password } = req.body;
 
     // Use email_id for students, and id for others. 
@@ -314,7 +316,7 @@ app.post(['/login', '/api/login'], (req, res) => {
 // --- OTP SYSTEM (DB-BACKED) ---
 
 // 1. SEND OTP (For Signup and Forgot Password)
-app.post('/api/send-otp', async (req, res) => {
+router.post(['/send-otp', '/api/send-otp'], async (req, res) => {
     const { email, role, type } = req.body; // type: 'signup' or 'forgot'
 
     if (!email) return res.status(400).json({ error: "Email is required" });
@@ -365,7 +367,7 @@ app.post('/api/send-otp', async (req, res) => {
 });
 
 // 2. RESET PASSWORD
-app.post('/api/reset-password', async (req, res) => {
+router.post(['/reset-password', '/api/reset-password'], async (req, res) => {
     const { email, role, newPassword } = req.body;
 
     if (!email || !newPassword) return res.status(400).json({ error: "Missing fields" });
@@ -396,7 +398,7 @@ app.post('/api/reset-password', async (req, res) => {
 });
 
 // --- GET USERS FOR MANAGEMENT ---
-app.get('/api/users', (req, res) => {
+router.get(['/users', '/api/users'], (req, res) => {
     const roleReq = req.query.role; // e.g., 'driver'
     let sql = "";
     if (roleReq === 'driver') {
@@ -414,7 +416,7 @@ app.get('/api/users', (req, res) => {
 });
 
 // ── MANAGEMENT OVERVIEW (Consolidated data for dashboards) ──────────────────
-app.get('/api/management/overview', verifyAdmin, (req, res) => {
+router.get(['/management/overview', '/api/management/overview'], verifyAdmin, (req, res) => {
     // Only management can see this
     if (req.user.role !== 'management') return res.status(403).json({ error: "Unauthorized" });
 
@@ -476,7 +478,7 @@ app.get('/api/management/overview', verifyAdmin, (req, res) => {
 });
 
 // Update Driver Route Path & Name
-app.patch('/api/management/driver-route', verifyAdmin, (req, res) => {
+router.patch(['/management/driver-route', '/api/management/driver-route'], verifyAdmin, (req, res) => {
     if (req.user.role !== 'management') return res.status(403).json({ error: "Unauthorized" });
     const { busId, route, waypoints } = req.body;
     if (!busId) return res.status(400).json({ error: "Bus ID required" });
@@ -491,14 +493,14 @@ app.patch('/api/management/driver-route', verifyAdmin, (req, res) => {
 });
 
 // --- TRACKING ---
-app.get('/api/tracking', (req, res) => {
+router.get(['/tracking', '/api/tracking'], (req, res) => {
     db.query("SELECT * FROM bus_tracking", (err, results) => {
         if (err) return res.status(500).json({ error: "DB Error" });
         res.json(results);
     });
 });
 
-app.post('/api/tracking', (req, res) => {
+router.post(['/tracking', '/api/tracking'], (req, res) => {
     const { busNumber, distance, arrivalTime } = req.body;
     const sql = `INSERT INTO bus_tracking (bus_number, distance, arrival_time) 
                  VALUES (?, ?, ?) 
@@ -511,7 +513,7 @@ app.post('/api/tracking', (req, res) => {
 });
 
 // --- ATTENDANCE ---
-app.get('/api/attendance', (req, res) => {
+router.get(['/attendance', '/api/attendance'], (req, res) => {
     const { userId, type } = req.query;
     let sql = "SELECT * FROM attendance";
     let params = [];
@@ -534,7 +536,7 @@ app.get('/api/attendance', (req, res) => {
     });
 });
 
-app.post('/api/attendance', (req, res) => {
+router.post(['/attendance', '/api/attendance'], (req, res) => {
     const { userId, type, dateStr, status } = req.body;
     const sql = `INSERT INTO attendance (user_id, attendance_type, date_str, status)
                  VALUES (?, ?, ?, ?)
@@ -550,7 +552,7 @@ app.post('/api/attendance', (req, res) => {
 });
 
 // --- GENERIC REPORTS & COMPLAINTS ---
-app.get('/api/reports', (req, res) => {
+router.get(['/reports', '/api/reports'], (req, res) => {
     const { type } = req.query;
     let sql = "SELECT * FROM generic_reports";
     let params = [];
@@ -564,7 +566,7 @@ app.get('/api/reports', (req, res) => {
     });
 });
 
-app.post('/api/reports', (req, res) => {
+router.post(['/reports', '/api/reports'], (req, res) => {
     const { type, referenceId, data } = req.body;
     const sql = "INSERT INTO generic_reports (report_type, reference_id, data) VALUES (?, ?, ?)";
     db.query(sql, [type, referenceId, JSON.stringify(data || {})], (err) => {
@@ -574,7 +576,7 @@ app.post('/api/reports', (req, res) => {
 });
 // ── TRIP STATUS (Driver sets it, Student reads it) ──────────────────────────
 // Driver: POST /api/trip-status  { active: true/false }
-app.post('/api/trip-status', verifyAdmin, (req, res) => {
+router.post(['/trip-status', '/api/trip-status'], verifyAdmin, (req, res) => {
     const { active } = req.body;
     const driverId = req.user.id;
 
@@ -588,7 +590,7 @@ app.post('/api/trip-status', verifyAdmin, (req, res) => {
 });
 
 // Student: GET /api/trip-status/:busId
-app.get('/api/trip-status/:busId', verifyAdmin, (req, res) => {
+router.get(['/trip-status/:busId', '/api/trip-status/:busId'], verifyAdmin, (req, res) => {
     const busId = String(req.params.busId);
     const status = tripStatusStore.get(busId);
     res.json({ active: status?.active || false, updatedAt: status?.updatedAt || null });
@@ -596,7 +598,7 @@ app.get('/api/trip-status/:busId', verifyAdmin, (req, res) => {
 
 // ── AUTO-ATTENDANCE (Student proximity-based) ─────────────────────────────────
 // POST /api/auto-attendance  { type: 'morning'|'evening', dateStr: 'YYYY-MM-DD' }
-app.post('/api/auto-attendance', verifyAdmin, (req, res) => {
+router.post(['/auto-attendance', '/api/auto-attendance'], verifyAdmin, (req, res) => {
     const userId = req.user.id; // student's email from JWT
     const { type, dateStr } = req.body;
 
@@ -625,7 +627,7 @@ app.post('/api/auto-attendance', verifyAdmin, (req, res) => {
 
 // ── TODAY'S ATTENDANCE for all students on a bus (Driver dashboard) ───────────
 // GET /api/bus-attendance/:busId
-app.get('/api/bus-attendance/:busId', verifyAdmin, (req, res) => {
+router.get(['/bus-attendance/:busId', '/api/bus-attendance/:busId'], verifyAdmin, (req, res) => {
     const busId = req.params.busId;
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
@@ -654,7 +656,7 @@ app.get('/api/bus-attendance/:busId', verifyAdmin, (req, res) => {
 
 //-----------bus driver gets students data---------------------
 // GET students assigned to a specific bus
-app.get('/api/bus-students/:busId', verifyAdmin, (req, res) => {
+router.get(['/bus-students/:busId', '/api/bus-students/:busId'], verifyAdmin, (req, res) => {
     const busId = req.params.busId;
 
     // We select the columns from your 'students' table
@@ -682,7 +684,7 @@ app.get('/api/bus-students/:busId', verifyAdmin, (req, res) => {
 
 //--------------bus location------------
 // GET the current location of a specific bus
-app.get('/api/bus-location/:busId', verifyAdmin, (req, res) => {
+router.get(['/bus-location/:busId', '/api/bus-location/:busId'], verifyAdmin, (req, res) => {
     const busId = req.params.busId;
 
     // Join with drivers table to get their name and phone
@@ -699,7 +701,7 @@ app.get('/api/bus-location/:busId', verifyAdmin, (req, res) => {
     });
 });
 // Update Bus Location (Called by Driver)
-app.post('/api/update-location', verifyAdmin, (req, res) => {
+router.post(['/update-location', '/api/update-location'], verifyAdmin, (req, res) => {
     const { latitude, longitude } = req.body;
     const driverId = req.user.id; // From JWT
 
@@ -719,10 +721,14 @@ app.post('/api/update-location', verifyAdmin, (req, res) => {
 });
 
 // --- LOGOUT ---
-app.post(['/logout', '/api/logout'], (req, res) => {
+router.post(['/logout', '/api/logout'], (req, res) => {
     res.clearCookie('authToken', cookieOptions);
     res.status(200).json({ message: "Logged out" });
 });
+
+
+app.use('/api', router);
+app.use('/', router);
 
 module.exports = app;
 

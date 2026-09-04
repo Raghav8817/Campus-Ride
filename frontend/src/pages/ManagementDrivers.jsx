@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { BASE_URL } from "../config/api";
 
 function ManagementDrivers() {
 
@@ -9,8 +10,7 @@ function ManagementDrivers() {
     const [drivers, setDrivers] = useState([])
 
     useEffect(() => {
-        const fetchDrivers = async () => {
-            const BASE_URL = import.meta.env.VITE_API_URL || "";
+        const fetchDrivers = async () => {
             
             try {
                 // Fetch drivers from DB

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import BottomNav from "./BottomNav"
+import { BASE_URL } from "../config/api";
 
 function BusFeeStatus() {
 
@@ -8,8 +9,7 @@ function BusFeeStatus() {
     const [user, setUser] = useState(null)
 
   useEffect(() => {
-    const fetchData = async () => {
-      const BASE_URL = import.meta.env.VITE_API_URL || "";
+    const fetchData = async () => {
       try {
         const uRes = await fetch(`${BASE_URL}/api/user-data`, { credentials: "include" });
         if (!uRes.ok) { navigate("/"); return; }

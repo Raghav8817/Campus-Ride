@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { BASE_URL } from "../config/api";
 
 const Input = ({ type = "text", placeholder, value, setValue, error }) => (
     <div className="w-full">
@@ -42,7 +43,6 @@ function Signup() {
     const [managementEmail, setManagementEmail] = useState("")
     const [managementAddress, setManagementAddress] = useState("")
 
-    const BASE_URL = import.meta.env.VITE_API_URL || "";
 
     const validate = () => {
         const errors = {};

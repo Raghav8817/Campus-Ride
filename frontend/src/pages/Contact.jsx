@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import BottomNav from "./BottomNav"
+import { BASE_URL } from "../config/api";
 
 function Contact() {
 
     const [contacts, setContacts] = useState([])
 
     useEffect(() => {
-        const fetchContacts = async () => {
-            const BASE_URL = import.meta.env.VITE_API_URL || "";
+        const fetchContacts = async () => {
             try {
                 const res = await fetch(`${BASE_URL}/api/reports?type=transport_contacts`);
                 if (res.ok) {

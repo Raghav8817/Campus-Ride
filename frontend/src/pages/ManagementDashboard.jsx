@@ -10,6 +10,7 @@ import {
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import "leaflet-routing-machine"
+import { BASE_URL } from "../config/api";
 
 // Fix Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl
@@ -17,9 +18,7 @@ L.Icon.Default.mergeOptions({
     iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
     shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-})
-
-const BASE_URL = import.meta.env.VITE_API_URL || "";
+})
 
 // Custom Icons
 const activeBusIcon = (busNumber) => L.divIcon({
