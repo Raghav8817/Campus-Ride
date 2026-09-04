@@ -1,8 +1,46 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "backend/api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/login",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/signup",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/logout",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/verify",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/user-data",
+      "dest": "backend/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
     }
   ]
 }

@@ -6,21 +6,7 @@ const db = require('./config/db');
 const jwt = require("jsonwebtoken");
 const cookieparser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
-const SibApiV3Sdk = require('@getbrevo/brevo');
-const { BrevoClient } = require('@getbrevo/brevo');
 const saltRounds = 10;
-
-// --- EMAIL CONFIGURATION (Brevo API) ---
-const brevo = new BrevoClient({
-    apiKey: process.env.BREVO_API_KEY,
-});
-
-// Verification on startup
-if (!process.env.BREVO_API_KEY) {
-    console.error("ERROR: BREVO_API_KEY is not defined!");
-} else {
-    console.log("Brevo API: Initialized");
-}
 
 // 1. DYNAMIC CORS: Replace with your actual Vercel URL
 app.use(cors({
@@ -92,7 +78,7 @@ const cookieOptions = {
     maxAge: 86400000
 };
 // --- AUTH VERIFICATION ---
-app.get('/verify', (req, res) => {
+app.get(['/verify', '/api/verify'], (req, res) => {
     const token = req.cookies.authToken;
     // Always send a JSON object so res.json() doesn't crash on the frontend
     if (!token) return res.status(401).json({ isAuth: false, message: "No token" });
@@ -105,7 +91,7 @@ app.get('/verify', (req, res) => {
 
 // --- GET USER PROFILE DATA ---
 // Optimized user-data route using your middleware
-app.get('/user-data', verifyAdmin, (req, res) => {
+app.get(['/user-data', '/api/user-data'], verifyAdmin, (req, res) => {
     const { id, role } = req.user; // Provided by verifyAdmin
 
     let sql = "";
@@ -218,7 +204,7 @@ app.get('/api/notifications', verifyAdmin, (req, res) => {
 
 // --- SIGNUP ---
 // --- SIGNUP (SECURE) ---
-app.post('/signup', async (req, res) => {
+app.post(['/signup', '/api/signup'], async (req, res) => {
     const {
         role, fullName, password, email, contact, address,
         studentBusId, course, branchSem,
@@ -235,14 +221,6 @@ app.post('/signup', async (req, res) => {
         if (role === 'student') { checkSql = "SELECT * FROM students WHERE email_id = ?"; checkVal = email; }
         else if (role === 'driver') { checkSql = "SELECT * FROM drivers WHERE email_id = ?"; checkVal = email; }
         else if (role === 'management') { checkSql = "SELECT * FROM management WHERE email_id = ?"; checkVal = email; }
-
-        // 0. VERIFY OTP FIRST
-        const otpRecord = await new Promise((resolve) => {
-            db.query("SELECT * FROM otps WHERE email = ? AND otp = ? AND expires_at > NOW()", [email, otp], (e, r) => resolve(r));
-        });
-        if (!otpRecord || otpRecord.length === 0) {
-            return res.status(400).json({ error: "Invalid or expired OTP" });
-        }
 
         const existingUser = await new Promise((resolve) => db.query(checkSql, [checkVal], (e, r) => resolve(r)));
         if (existingUser && existingUser.length > 0) {
@@ -287,8 +265,6 @@ app.post('/signup', async (req, res) => {
             }
             const token = jwt.sign({ id: userIdForToken, role: role }, process.env.JWT_SECRET, { expiresIn: "1d" });
             res.cookie('authToken', token, cookieOptions);
-            // Cleanup OTP
-            db.query("DELETE FROM otps WHERE email = ?", [email]);
             res.status(201).json({ message: "Success", role: role });
         });
 
@@ -299,7 +275,7 @@ app.post('/signup', async (req, res) => {
 });
 // --- LOGIN ---
 // --- LOGIN ---
-app.post('/login', (req, res) => {
+app.post(['/login', '/api/login'], (req, res) => {
     const { role, password } = req.body;
 
     // Use email_id for students, and id for others. 
@@ -379,40 +355,8 @@ app.post('/api/send-otp', async (req, res) => {
             });
         });
 
-        // Send Email via Brevo
-        try {
-            const result = await brevo.transactionalEmails.sendTransacEmail({
-                subject: type === 'signup' ? 'Verify Your WCTM Registration' : 'Reset Your WCTM Password',
-                sender: { "name": "WCTM Transport", "email": "raghavsingh8817nitin@gmail.com" },
-                to: [{ "email": email }],
-                htmlContent: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
-                        <div style="background: #facc15; padding: 20px; text-align: center;">
-                            <img src="https://wctmgurgaon.com/images/logo.png" alt="WCTM Logo" style="width: 100px;">
-                        </div>
-                        <div style="padding: 30px; text-align: center;">
-                            <h2 style="color: #333;">Verification Code</h2>
-                            <p style="color: #666;">Your One-Time Password (OTP) for ${type === 'signup' ? 'registration' : 'password reset'} is:</p>
-                            <div style="background: #f3f4f6; padding: 15px; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #111; margin: 20px 0; border-radius: 8px;">
-                                ${otp}
-                            </div>
-                            <p style="color: #999; font-size: 12px;">This code will expire in 5 minutes.</p>
-                        </div>
-                        <div style="background: #f9fafb; padding: 15px; text-align: center; color: #aaa; font-size: 11px;">
-                            WCTM Transport Management System &copy; 2026
-                        </div>
-                    </div>
-                `
-            });
-            console.log("Email sent successfully via Brevo:", result.messageId);
-            res.json({ message: "OTP sent successfully" });
-        } catch (error) {
-            console.error("Brevo API Error:", error);
-            return res.status(500).json({ 
-                error: "Email delivery failed", 
-                details: error.message 
-            });
-        }
+        console.log(`[OTP Generated] Email: ${email} | OTP: ${otp}`);
+        res.json({ message: "OTP sent successfully", otp });
 
     } catch (err) {
         console.error("OTP Route Error:", err);
@@ -422,19 +366,11 @@ app.post('/api/send-otp', async (req, res) => {
 
 // 2. RESET PASSWORD
 app.post('/api/reset-password', async (req, res) => {
-    const { email, role, otp, newPassword } = req.body;
+    const { email, role, newPassword } = req.body;
 
-    if (!email || !otp || !newPassword) return res.status(400).json({ error: "Missing fields" });
+    if (!email || !newPassword) return res.status(400).json({ error: "Missing fields" });
 
     try {
-        // Verify OTP
-        const otpRecord = await new Promise((resolve) => {
-            db.query("SELECT * FROM otps WHERE email = ? AND otp = ? AND expires_at > NOW()", [email, otp], (e, r) => resolve(r));
-        });
-
-        if (!otpRecord || otpRecord.length === 0) {
-            return res.status(400).json({ error: "Invalid or expired OTP" });
-        }
 
         // Hash New Password
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
@@ -450,9 +386,6 @@ app.post('/api/reset-password', async (req, res) => {
                 if (err) reject(err); else resolve(r);
             });
         });
-
-        // Cleanup OTP
-        db.query("DELETE FROM otps WHERE email = ?", [email]);
 
         res.json({ message: "Password updated successfully" });
 
@@ -786,12 +719,16 @@ app.post('/api/update-location', verifyAdmin, (req, res) => {
 });
 
 // --- LOGOUT ---
-app.post('/logout', (req, res) => {
+app.post(['/logout', '/api/logout'], (req, res) => {
     res.clearCookie('authToken', cookieOptions);
     res.status(200).json({ message: "Logged out" });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
+
+if (process.env.NODE_ENV !== 'production' || require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
